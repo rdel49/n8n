@@ -16,18 +16,26 @@ export async function microsoftSharePointApiRequest(
 	headers?: IDataObject,
 	url?: string,
 ): Promise<any> {
-	const credentials: { subdomain: string } = await this.getCredentials(
+	const credentials: { subdomain?: string; customDomain?: string } = await this.getCredentials(
 		'microsoftSharePointOAuth2Api',
 	);
 
+	const domain = credentials.customDomain?.trim()
+		? credentials.customDomain.trim()
+		: `${credentials.subdomain}.sharepoint.com`;
+
+	const resolvedUrl = url ?? `https://${domain}/_api/v2.0${endpoint}`;
+
 	const options: IHttpRequestOptions = {
 		method,
-		url: url ?? `https://${credentials.subdomain}.sharepoint.com/_api/v2.0${endpoint}`,
+		url: resolvedUrl,
 		json: true,
 		headers,
 		body,
 		qs,
 	};
+
+	console.log('SharePoint request URL:', resolvedUrl);
 
 	return await this.helpers.httpRequestWithAuthentication.call(
 		this,

@@ -17,7 +17,8 @@ export class MicrosoftSharePointOAuth2Api implements ICredentialType {
 	httpRequestNode = {
 		name: 'Microsoft SharePoint',
 		docsUrl: 'https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-graph',
-		apiBaseUrlPlaceholder: 'https://{subdomain}.sharepoint.com/_api/v2.0/',
+		apiBaseUrlPlaceholder:
+			'https://{{ $self.customDomain ? $self.customDomain : `${$self.subdomain}.sharepoint.com` }}/_api/v2.0/',
 	};
 
 	properties: INodeProperties[] = [
@@ -25,7 +26,8 @@ export class MicrosoftSharePointOAuth2Api implements ICredentialType {
 			displayName: 'Scope',
 			name: 'scope',
 			type: 'hidden',
-			default: '=openid offline_access https://{{$self.subdomain}}.sharepoint.com/.default',
+			default:
+				'=openid offline_access https://{{ $self.customDomain ? $self.customDomain : `${$self.subdomain}.sharepoint.com` }}/.default',
 		},
 		{
 			displayName: 'Subdomain',
@@ -33,6 +35,13 @@ export class MicrosoftSharePointOAuth2Api implements ICredentialType {
 			type: 'string',
 			default: '',
 			hint: 'You can extract the subdomain from the URL. For example, in the URL "https://tenant123.sharepoint.com", the subdomain is "tenant123".',
+		},
+		{
+			name: 'customDomain',
+			displayName: 'Custom Domain',
+			type: 'string',
+			default: '',
+			hint: 'Optional: Only provide a full subdomain and domain if you need to override the default sharepoint.com domain.',
 		},
 	];
 }
